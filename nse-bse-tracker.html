@@ -601,3 +601,265 @@ init();
 </script>
 </body>
 </html>
+<!-- DIVIDEND TAB PATCH — append after closing </html> tag is safe, 
+     but we inject via script so it integrates with existing app -->
+<script>
+(function injectDividendTab() {
+
+  /* ── 1. Add tab button ── */
+  const tabs = document.querySelector('.tabs');
+  const divTab = document.createElement('button');
+  divTab.className = 'tab';
+  divTab.textContent = 'Dividends';
+  divTab.onclick = function(){ switchTab('dividends', this); };
+  tabs.appendChild(divTab);
+
+  /* ── 2. Add tab section HTML ── */
+  const section = document.createElement('div');
+  section.id = 'tab-dividends';
+  section.className = 'section';
+  section.innerHTML = `
+    <div class="metrics" id="div-metrics">
+      <div class="metric"><div class="metric-label">Annual dividend income</div><div class="metric-value" id="d-annual">&#8212;</div></div>
+      <div class="metric"><div class="metric-label">Avg portfolio yield</div><div class="metric-value" id="d-yield">&#8212;</div></div>
+      <div class="metric"><div class="metric-label">Dividend stocks</div><div class="metric-value" id="d-count">0</div></div>
+      <div class="metric"><div class="metric-label">Next ex-date</div><div class="metric-value" id="d-next" style="font-size:14px">&#8212;</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Dividend details per holding</div>
+      <p style="font-size:12px;color:#888780;margin-bottom:10px;line-height:1.6">
+        Enter dividend data from <strong>Tickertape.in</strong> or <strong>Screener.in</strong> for each stock.
+        Ex-date format: YYYY-MM-DD (e.g. 2025-07-15)
+      </p>
+      <div class="tbl-wrap">
+        <table style="min-width:560px">
+          <thead><tr>
+            <th style="width:14%">Symbol</th>
+            <th style="width:16%">Div/share (&#8377;)</th>
+            <th style="width:13%">Yield %</th>
+            <th style="width:16%">Ex-date</th>
+            <th style="width:16%">Pay date</th>
+            <th style="width:13%">Annual income</th>
+            <th style="width:12%">History</th>
+          </tr></thead>
+          <tbody id="div-body">
+            <tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">Add stocks first, then enter dividend data below</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Add / update dividend data</div>
+      <p style="font-size:12px;color:#888780;margin-bottom:10px">
+        Find dividend data on <a href="https://www.tickertape.in" target="_blank">Tickertape.in</a> &rarr; search stock &rarr; Financials &rarr; Dividends
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:7px" id="div-form-grid">
+        <select id="div-stock" style="height:36px;font-size:13px"><option value="">Select stock</option></select>
+        <input type="number" id="div-dps" placeholder="Dividend per share (&#8377;)" step="0.01">
+        <input type="text"   id="div-exdate" placeholder="Ex-date (YYYY-MM-DD)">
+        <input type="text"   id="div-paydate" placeholder="Pay date (YYYY-MM-DD)">
+        <input type="number" id="div-freq" placeholder="Frequency per year (1=annual, 4=quarterly)" step="1" value="1">
+        <input type="text"   id="div-history" placeholder="Past dividends e.g. 18,16,14,12 (latest first)">
+      </div>
+      <div class="form-footer">
+        <button class="btn-primary" onclick="saveDividend()">Save dividend data</button>
+        <span id="div-msg" style="font-size:12px"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Upcoming ex-dates &amp; calendar</div>
+      <div id="div-calendar" style="font-size:13px;color:#888780">No upcoming ex-dates — add ex-date data above.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ask Claude — dividend strategy</div>
+      <div class="btn-row">
+        <button onclick="askDividendClaude('screen')">Screen best yielders &#8599;</button>
+        <button onclick="askDividendClaude('income')">Maximise income &#8599;</button>
+        <button onclick="askDividendClaude('safety')">Check payout safety &#8599;</button>
+      </div>
+      <div id="div-ai" class="ai-out" style="margin-top:8px">Dividend AI analysis will appear here.</div>
+    </div>
+  `;
+  document.querySelector('.container').appendChild(section);
+
+  /* ── 3. Extend switchTab to handle dividends ── */
+  const origSwitch = window.switchTab;
+  window.switchTab = function(t, btn) {
+    origSwitch(t, btn);
+    if (t === 'dividends') renderDividends();
+  };
+
+  /* ── 4. Dividend data storage (merged into portfolio objects) ── */
+  window.saveDividend = function() {
+    const sym = document.getElementById('div-stock').value;
+    if (!sym) { showDivMsg('Select a stock first.', false); return; }
+    const idx = portfolio.findIndex(p => p.sym === sym);
+    if (idx < 0) { showDivMsg('Stock not found.', false); return; }
+    const dps     = parseFloat(document.getElementById('div-dps').value)    || 0;
+    const exdate  = document.getElementById('div-exdate').value.trim()       || '';
+    const paydate = document.getElementById('div-paydate').value.trim()      || '';
+    const freq    = parseInt(document.getElementById('div-freq').value)      || 1;
+    const histRaw = document.getElementById('div-history').value.trim()      || '';
+    const history = histRaw ? histRaw.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v)) : [];
+    portfolio[idx].div = { dps, exdate, paydate, freq, history };
+    savePortfolio();
+    renderDividends();
+    showDivMsg(sym + ' dividend data saved!', true);
+    ['div-dps','div-exdate','div-paydate','div-freq','div-history'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('div-freq').value = '1';
+  };
+
+  function showDivMsg(text, ok) {
+    const el = document.getElementById('div-msg');
+    el.textContent = text; el.style.color = ok ? '#3B6D11' : '#A32D2D';
+    setTimeout(() => el.textContent = '', 4000);
+  }
+
+  /* ── 5. Render dividend tab ── */
+  window.renderDividends = function() {
+    /* populate stock select */
+    document.getElementById('div-stock').innerHTML =
+      '<option value="">Select stock</option>' +
+      portfolio.map(s => `<option value="${s.sym}">${s.sym}${s.name ? ' — ' + s.name : ''}</option>`).join('');
+
+    const tbody = document.getElementById('div-body');
+    if (!portfolio.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">No holdings yet</td></tr>';
+      updateDivMetrics([]); renderCalendar([]); return;
+    }
+
+    const rows = portfolio.map((s, i) => {
+      const d = s.div || {};
+      const dps     = d.dps    || 0;
+      const freq    = d.freq   || 1;
+      const exdate  = d.exdate || '';
+      const paydate = d.paydate|| '';
+      const annual  = dps * freq * s.qty;
+      const yld     = s.cmp > 0 ? ((dps * freq) / s.cmp * 100) : 0;
+      const histStr = d.history && d.history.length ? d.history.slice(0,4).join(', ') : '—';
+
+      /* ex-date status badge */
+      let dateBadge = '—';
+      if (exdate) {
+        const daysUntil = Math.ceil((new Date(exdate) - new Date()) / 86400000);
+        if (daysUntil < 0)       dateBadge = `<span style="font-size:11px;color:#888780">${exdate} (past)</span>`;
+        else if (daysUntil <= 7) dateBadge = `<span class="badge" style="background:#FCEBEB;color:#A32D2D">${exdate} (${daysUntil}d)</span>`;
+        else if (daysUntil <= 30)dateBadge = `<span class="badge" style="background:#FAEEDA;color:#854F0B">${exdate} (${daysUntil}d)</span>`;
+        else                     dateBadge = `<span style="font-size:11px;color:#5F5E5A">${exdate}</span>`;
+      }
+
+      return `<tr>
+        <td style="font-weight:500">${s.sym}</td>
+        <td>${dps ? '\u20B9' + dps.toFixed(2) : '<span style="color:#aaa;font-size:11px">Not set</span>'}</td>
+        <td>${yld ? yld.toFixed(2) + '%' : '—'}</td>
+        <td>${dateBadge}</td>
+        <td style="font-size:11px;color:#5F5E5A">${paydate || '—'}</td>
+        <td style="color:${annual>0?'#3B6D11':'#888780'}">${annual > 0 ? '\u20B9' + Number(annual).toLocaleString('en-IN',{maximumFractionDigits:0}) : '—'}</td>
+        <td style="font-size:11px;color:#888780">${histStr}</td>
+      </tr>`;
+    });
+
+    tbody.innerHTML = rows.join('');
+    updateDivMetrics(portfolio);
+    renderCalendar(portfolio);
+  };
+
+  function updateDivMetrics(stocks) {
+    let totalAnnual = 0, totalYield = 0, divCount = 0, nextDate = null, nextSym = '';
+    for (const s of stocks) {
+      const d = s.div || {};
+      if (!d.dps) continue;
+      divCount++;
+      const annual = d.dps * (d.freq||1) * s.qty;
+      const yld    = s.cmp > 0 ? ((d.dps * (d.freq||1)) / s.cmp * 100) : 0;
+      totalAnnual += annual;
+      totalYield  += yld;
+      if (d.exdate) {
+        const dt = new Date(d.exdate);
+        if (dt >= new Date() && (!nextDate || dt < nextDate)) { nextDate = dt; nextSym = s.sym; }
+      }
+    }
+    document.getElementById('d-annual').textContent = totalAnnual > 0 ? '\u20B9' + Number(totalAnnual).toLocaleString('en-IN',{maximumFractionDigits:0}) : '—';
+    document.getElementById('d-yield').textContent  = divCount > 0 ? (totalYield / divCount).toFixed(2) + '%' : '—';
+    document.getElementById('d-count').textContent  = divCount;
+    document.getElementById('d-next').textContent   = nextDate ? nextSym + ' · ' + nextDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '—';
+  }
+
+  function renderCalendar(stocks) {
+    const el = document.getElementById('div-calendar');
+    const upcoming = stocks
+      .filter(s => s.div && s.div.exdate)
+      .map(s => ({ sym: s.sym, name: s.name||'', exdate: s.div.exdate, paydate: s.div.paydate||'', dps: s.div.dps||0, qty: s.qty }))
+      .filter(e => new Date(e.exdate) >= new Date())
+      .sort((a,b) => new Date(a.exdate) - new Date(b.exdate));
+
+    if (!upcoming.length) {
+      el.innerHTML = '<p style="color:#888780;font-size:13px">No upcoming ex-dates. Add ex-date data for your stocks above.</p>';
+      return;
+    }
+
+    el.innerHTML = upcoming.map(e => {
+      const daysUntil = Math.ceil((new Date(e.exdate) - new Date()) / 86400000);
+      const urgency   = daysUntil <= 7 ? '#A32D2D' : daysUntil <= 30 ? '#854F0B' : '#3B6D11';
+      const income    = e.dps * e.qty;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid #e0dfd8;flex-wrap:wrap;gap:6px">
+        <div>
+          <span style="font-weight:500;font-size:14px">${e.sym}</span>
+          <span style="font-size:12px;color:#888780;margin-left:6px">${e.name}</span>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <div style="text-align:center">
+            <div style="font-size:11px;color:#888780">Ex-date</div>
+            <div style="font-size:13px;font-weight:500;color:${urgency}">${e.exdate}</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:11px;color:#888780">In</div>
+            <div style="font-size:13px;font-weight:500;color:${urgency}">${daysUntil}d</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:11px;color:#888780">Pay date</div>
+            <div style="font-size:13px">${e.paydate || '—'}</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:11px;color:#888780">Income</div>
+            <div style="font-size:13px;font-weight:500;color:#3B6D11">\u20B9${Number(income).toLocaleString('en-IN',{maximumFractionDigits:0})}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── 6. Claude dividend analysis ── */
+  window.askDividendClaude = async function(type) {
+    const el = document.getElementById('div-ai');
+    if (!portfolio.length) { el.textContent = 'Add stocks first.'; return; }
+    const sum = portfolio.map(s => {
+      const d = s.div || {};
+      const yld = s.cmp > 0 && d.dps ? ((d.dps*(d.freq||1))/s.cmp*100).toFixed(2) : 'N/A';
+      const hist = d.history && d.history.length ? d.history.join(',') : 'N/A';
+      return `${s.sym}: CMP=Rs${s.cmp}, DPS=Rs${d.dps||0}, Yield=${yld}%, Freq=${d.freq||'N/A'}/yr, ExDate=${d.exdate||'N/A'}, History(Rs)=${hist}, AnnualIncome=Rs${d.dps?(d.dps*(d.freq||1)*s.qty).toFixed(0):0}`;
+    }).join('\n');
+    const prompts = {
+      screen: `You are an Indian equity income analyst. From this NSE/BSE portfolio, identify the top dividend-paying stocks, rank them by yield quality (not just yield %) and explain which are worth holding for income. Flag any with unsustainable yields.\n\n${sum}`,
+      income: `You are an Indian equity income strategist. Review this portfolio and suggest how to maximise annual dividend income. Which stocks to add more of, which to trim, and what yield to target. Keep it actionable.\n\n${sum}`,
+      safety: `You are a dividend safety analyst for Indian markets. For each stock with dividend data, assess whether the dividend is safe based on yield level and payment history trend. Flag any at risk of a cut.\n\n${sum}`
+    };
+    el.textContent = 'Analysing dividends with Claude...';
+    if (!apiKey) { el.textContent = 'Please enter your Anthropic API key in the green bar at the top.'; return; }
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompts[type] }] })
+      });
+      const d = await res.json();
+      el.textContent = d.content?.find(c => c.type === 'text')?.text || (d.error?.message || 'No response.');
+    } catch(e) { el.textContent = 'API call failed.'; }
+  };
+
+})();
+</script>
