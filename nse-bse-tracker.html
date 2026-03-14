@@ -7,12 +7,11 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a18;font-size:15px}
-  a{color:#185FA5}
   .topbar{background:#fff;border-bottom:0.5px solid #e0dfd8;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:10}
   .topbar-title{font-size:15px;font-weight:500}
   .topbar-sub{font-size:12px;color:#888780}
   .container{max-width:960px;margin:0 auto;padding:16px}
-  .tabs{display:flex;gap:2px;margin-bottom:1.25rem;border-bottom:0.5px solid #e0dfd8;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:#fff;border-radius:10px 10px 0 0;padding:0 8px}
+  .tabs{display:flex;gap:2px;margin-bottom:1.25rem;border-bottom:0.5px solid #e0dfd8;overflow-x:auto;scrollbar-width:none;background:#fff;border-radius:10px 10px 0 0;padding:0 8px}
   .tabs::-webkit-scrollbar{display:none}
   .tab{padding:10px 14px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:#888780;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
   .tab.active{color:#1a1a18;border-bottom:2px solid #1a1a18}
@@ -26,7 +25,7 @@
   .card{background:#fff;border:0.5px solid #e0dfd8;border-radius:12px;padding:1rem 1.125rem;margin-bottom:.875rem}
   .card-title{font-size:13px;font-weight:500;margin-bottom:.625rem}
   .card-sub{font-size:12px;color:#888780;margin-bottom:.625rem;line-height:1.6}
-  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl-wrap{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:12px;min-width:460px}
   th{text-align:left;padding:7px 8px;font-weight:500;color:#888780;border-bottom:0.5px solid #e0dfd8;font-size:11px;white-space:nowrap}
   td{padding:7px 8px;border-bottom:0.5px solid #e0dfd8;white-space:nowrap}
@@ -43,12 +42,11 @@
   input:focus,select:focus,textarea:focus{border-color:#888780;box-shadow:0 0 0 2px rgba(55,138,221,0.15)}
   button{font-family:inherit;font-size:13px;padding:7px 14px;border:0.5px solid #c8c7c0;border-radius:8px;background:#fff;color:#1a1a18;cursor:pointer}
   button:hover{background:#f1efe8}
-  button:active{transform:scale(0.98)}
   .btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
   .btn-primary:hover{background:#333}
   .form-footer{display:flex;gap:8px;align-items:center;margin-bottom:.75rem;flex-wrap:wrap}
-  .paste-area{height:100px;font-family:monospace;resize:vertical;font-size:11px}
-  .ai-out{background:#f5f5f0;border-radius:8px;padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;min-height:44px;color:#1a1a18}
+  .paste-area{height:120px;font-family:monospace;resize:vertical;font-size:11px}
+  .ai-out{background:#f5f5f0;border-radius:8px;padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;min-height:44px}
   .score-bar-wrap{display:flex;align-items:center;gap:6px;min-width:80px}
   .score-bar{height:5px;border-radius:3px;background:#e0dfd8;flex:1;overflow:hidden}
   .score-fill{height:100%;border-radius:3px}
@@ -57,15 +55,8 @@
   .step-num{width:22px;height:22px;border-radius:50%;background:#E6F1FB;color:#185FA5;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
   .step-text{font-size:13px;line-height:1.6}
   .step-text strong{font-weight:500}
-  .file-zone{border:1.5px dashed #c8c7c0;border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;margin-bottom:10px;transition:border-color .2s,background .2s}
+  .file-zone{border:1.5px dashed #c8c7c0;border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;margin-bottom:10px;transition:border-color .2s,background .2s}
   .file-zone:hover,.file-zone.drag-over{border-color:#185FA5;background:#E6F1FB}
-  .file-zone-icon{font-size:28px;margin-bottom:8px}
-  .file-zone-label{font-size:13px;color:#5F5E5A;margin-bottom:4px}
-  .file-zone-sub{font-size:11px;color:#888780}
-  .col-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:6px 0}
-  @media(min-width:480px){.col-map{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  .col-pill{background:#f5f5f0;border:0.5px solid #e0dfd8;border-radius:4px;padding:4px 7px;font-size:11px;color:#888780}
-  .col-pill span{color:#1a1a18;font-weight:500}
   .btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
   .stock-card{background:#f5f5f0;border-radius:8px;padding:10px 12px;margin-bottom:6px}
   .stock-card-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
@@ -77,9 +68,8 @@
   .api-bar input{flex:1;min-width:180px;font-family:monospace;font-size:12px}
   .api-status{font-size:11px;color:#3B6D11;white-space:nowrap}
   .save-banner{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:8px;padding:8px 14px;margin-bottom:1rem;font-size:12px;color:#185FA5}
-  .tip-box{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:10px 14px;font-size:12px;color:#854F0B;margin-bottom:10px;line-height:1.6}
-  .tip-box strong{font-weight:500}
-  .preview-box{background:#f5f5f0;border-radius:8px;padding:10px;font-size:11px;font-family:monospace;margin-bottom:8px;color:#5F5E5A;max-height:80px;overflow:auto;display:none}
+  .debug-box{background:#fff8e1;border:0.5px solid #FAC775;border-radius:8px;padding:10px;font-size:11px;font-family:monospace;margin-top:8px;white-space:pre-wrap;max-height:120px;overflow:auto;display:none;color:#5F5E5A}
+  .tip-box{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:8px;padding:10px 14px;font-size:12px;color:#3B6D11;margin-bottom:10px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -97,14 +87,12 @@
 </div>
 
 <div class="container">
-
   <div class="api-bar">
     <label>Anthropic API key</label>
     <input type="password" id="api-key-input" placeholder="sk-ant-..." oninput="saveApiKey(this.value)">
     <span class="api-status" id="api-status"></span>
     <a href="https://console.anthropic.com" target="_blank" style="font-size:11px;white-space:nowrap">Get free key &rarr;</a>
   </div>
-
   <div id="save-banner" class="save-banner" style="display:none">Portfolio loaded from your last session.</div>
 
   <div class="tabs">
@@ -141,59 +129,37 @@
   <!-- ICICI IMPORT -->
   <div id="tab-icici" class="section">
     <div class="card">
-      <div class="card-title">How to export from ICICI Direct</div>
-      <div class="step-box"><div class="step-num">1</div><div class="step-text">Log in to <strong>icicidirect.com</strong> &rarr; click <strong>Portfolio</strong> in the top menu</div></div>
-      <div class="step-box"><div class="step-num">2</div><div class="step-text">Open <strong>Portfolio Beta</strong> &rarr; click the <strong>Download</strong> button (top right of the table)</div></div>
-      <div class="step-box"><div class="step-num">3</div><div class="step-text">Choose <strong>CSV</strong> format and save to your device</div></div>
-      <div class="step-box"><div class="step-num">4</div><div class="step-text">Upload the CSV below using the upload area, or paste the contents into the text box</div></div>
+      <div class="card-title">Export steps from ICICI Direct</div>
+      <div class="step-box"><div class="step-num">1</div><div class="step-text">Log in to <strong>icicidirect.com</strong> &rarr; click <strong>Portfolio</strong></div></div>
+      <div class="step-box"><div class="step-num">2</div><div class="step-text">Open <strong>Portfolio Beta</strong> &rarr; click <strong>Download</strong> &rarr; choose <strong>CSV</strong></div></div>
+      <div class="step-box"><div class="step-num">3</div><div class="step-text">Open the saved CSV in <strong>Notepad</strong>, press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong> to copy everything</div></div>
+      <div class="step-box"><div class="step-num">4</div><div class="step-text">Come back here, paste into the box below and click <strong>Import</strong></div></div>
     </div>
 
     <div class="card">
-      <div class="card-title">ICICI Direct CSV column format (auto-detected)</div>
-      <div class="col-map">
-        <div class="col-pill">Col 1: <span>Stock symbol</span></div>
-        <div class="col-pill">Col 2: <span>Company name</span></div>
-        <div class="col-pill">Col 3: <span>ISIN code</span></div>
-        <div class="col-pill">Col 4: <span>Qty</span></div>
-        <div class="col-pill">Col 5: <span>Avg cost price</span></div>
-        <div class="col-pill">Col 6: <span>Current market price</span></div>
+      <div class="card-title">Paste your ICICI Direct CSV here</div>
+      <div class="tip-box">Paste the full CSV contents including the header row. The app will auto-detect and skip the header.</div>
+      <textarea class="paste-area" id="icici-paste" placeholder="Paste your entire CSV here — header row included. Example:&#10;Stock Symbol,Company Name,ISIN Code,Qty,Average Cost Price,Current Market Price,...&#10;RELIANCE,RELIANCE INDUSTRIES LIMITED,INE002A01018,10,2400.00,2510.50,..."></textarea>
+      <div class="form-footer" style="margin-top:6px">
+        <button class="btn-primary" onclick="importPaste()">Import</button>
+        <span id="icici-msg" style="font-size:12px"></span>
       </div>
-      <p class="card-sub" style="margin-top:6px">The app reads columns 1, 4, 5 and 6. All other columns are ignored.</p>
+      <div id="debug-box" class="debug-box"></div>
     </div>
 
     <div class="card">
       <div class="card-title">Upload CSV file</div>
-      <div class="tip-box"><strong>Important:</strong> Tick "Skip header row" before importing — your ICICI CSV has a header row with column names.</div>
       <div class="file-zone" id="file-zone"
         ondragover="event.preventDefault();this.classList.add('drag-over')"
         ondragleave="this.classList.remove('drag-over')"
         ondrop="handleDrop(event)"
         onclick="document.getElementById('file-input').click()">
-        <div class="file-zone-icon">&#128196;</div>
-        <div class="file-zone-label">Click to upload or drag &amp; drop your ICICI Direct CSV</div>
-        <div class="file-zone-sub">.csv files only</div>
+        <div style="font-size:24px;margin-bottom:8px">&#128196;</div>
+        <div style="font-size:13px;color:#5F5E5A;margin-bottom:4px">Click to upload or drag &amp; drop your ICICI Direct CSV</div>
+        <div style="font-size:11px;color:#888780">.csv files only</div>
       </div>
       <input type="file" id="file-input" accept=".csv,.txt" style="display:none" onchange="handleFileInput(this)">
-      <div id="file-preview" class="preview-box"></div>
-      <div class="form-footer">
-        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;font-weight:500">
-          <input type="checkbox" id="file-header" style="width:auto" checked> Skip header row
-        </label>
-        <span id="file-msg" style="font-size:12px"></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Or paste CSV contents directly</div>
-      <p class="card-sub">Open your downloaded CSV in Notepad, press Ctrl+A to select all, Ctrl+C to copy, then paste here:</p>
-      <textarea class="paste-area" id="icici-paste" placeholder="Paste your ICICI Direct CSV contents here..."></textarea>
-      <div class="form-footer" style="margin-top:6px">
-        <button class="btn-primary" onclick="importPaste()">Import pasted content</button>
-        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;font-weight:500">
-          <input type="checkbox" id="icici-header" style="width:auto" checked> Skip header row
-        </label>
-        <span id="icici-msg" style="font-size:12px"></span>
-      </div>
+      <span id="file-msg" style="font-size:12px"></span>
     </div>
   </div>
 
@@ -275,19 +241,11 @@
       <div id="signals-ai" class="ai-out" style="margin-top:10px;display:none"></div>
     </div>
   </div>
-
 </div>
 
 <script>
 let portfolio = [];
 let apiKey = '';
-
-/* ── ICICI Direct CSV column indices (0-based) ── */
-const COL_SYM  = 0;  // Stock Symbol
-const COL_NAME = 1;  // Company Name
-const COL_QTY  = 3;  // Qty
-const COL_COST = 4;  // Average Cost Price
-const COL_CMP  = 5;  // Current Market Price
 
 function init() {
   try { portfolio = JSON.parse(localStorage.getItem('nse_portfolio') || '[]'); } catch(e) { portfolio = []; }
@@ -296,16 +254,12 @@ function init() {
     setTimeout(() => document.getElementById('save-banner').style.display = 'none', 4000);
   }
   apiKey = localStorage.getItem('nse_api_key') || '';
-  if (apiKey) {
-    document.getElementById('api-key-input').value = apiKey;
-    document.getElementById('api-status').textContent = 'Key saved';
-  }
+  if (apiKey) { document.getElementById('api-key-input').value = apiKey; document.getElementById('api-status').textContent = 'Key saved'; }
   renderPortfolio();
 }
 
 function saveApiKey(v) {
-  apiKey = v.trim();
-  localStorage.setItem('nse_api_key', apiKey);
+  apiKey = v.trim(); localStorage.setItem('nse_api_key', apiKey);
   document.getElementById('api-status').textContent = apiKey ? 'Key saved' : '';
 }
 
@@ -317,16 +271,54 @@ function savePortfolio() {
 function switchTab(t, btn) {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-' + t).classList.add('active');
-  if (t==='analysis') renderAnalysis();
-  if (t==='signals') refreshSignals();
-  if (t==='portfolio') renderPortfolio();
-  if (t==='add') populateFundSelect();
+  btn.classList.add('active'); document.getElementById('tab-'+t).classList.add('active');
+  if(t==='analysis') renderAnalysis();
+  if(t==='signals') refreshSignals();
+  if(t==='portfolio') renderPortfolio();
+  if(t==='add') populateFundSelect();
 }
 
-/* ── Robust CSV parser — handles quoted fields, trailing commas ── */
-function parseCSVLine(line) {
+/* ── Core ICICI Direct parser ──────────────────────────────────
+   ICICI CSV format (confirmed):
+   Col 0: Stock Symbol   Col 1: Company Name   Col 2: ISIN Code
+   Col 3: Qty            Col 4: Avg Cost Price  Col 5: CMP
+   Rows end with a trailing comma → extra empty col at end (ignored)
+   Header row starts with "Stock Symbol" → auto-detected and skipped
+─────────────────────────────────────────────────────────────── */
+function parseICICI(text) {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const results = [];
+  const debugLines = [];
+  let headerSkipped = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // Split on comma, preserve quoted fields
+    const cols = splitCSVLine(line);
+    debugLines.push('Row ' + i + ' [' + cols.length + ' cols]: ' + cols.slice(0,6).join(' | '));
+
+    // Auto-skip header row
+    const first = (cols[0] || '').trim().toLowerCase();
+    if (first === 'stock symbol' || first === 'scrip' || first === 'symbol') {
+      headerSkipped = true; continue;
+    }
+
+    const sym  = (cols[0] || '').trim().toUpperCase();
+    const name = (cols[1] || '').trim();
+    const qty  = cleanNum(cols[3]);
+    const cost = cleanNum(cols[4]);
+    const cmp  = cleanNum(cols[5]);
+
+    if (!sym || sym.length < 2) continue;
+    if (isNaN(qty) || isNaN(cost) || qty <= 0 || cost <= 0) continue;
+
+    results.push({ sym, name, qty, cost, cmp: (!isNaN(cmp) && cmp > 0) ? cmp : cost });
+  }
+
+  return { results, debug: debugLines.join('\n'), headerSkipped };
+}
+
+function splitCSVLine(line) {
   const cols = [];
   let cur = '', inQ = false;
   for (let i = 0; i < line.length; i++) {
@@ -339,142 +331,127 @@ function parseCSVLine(line) {
   return cols;
 }
 
-function parseCSVText(text) {
-  return text.split(/\r?\n/).filter(l => l.trim()).map(parseCSVLine);
-}
-
 function cleanNum(v) {
   if (v === undefined || v === null) return NaN;
-  return parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
+  // Remove currency symbols, spaces, brackets used for negatives like (0.91)
+  const s = String(v).replace(/[^\d.\-]/g, '');
+  return parseFloat(s);
 }
 
-/* ── ICICI Direct specific parser ── */
-function parseICICIRows(rows, skipHeader) {
-  const data = skipHeader ? rows.slice(1) : rows;
-  let count = 0, skipped = 0;
-  for (const cols of data) {
-    if (cols.length < 6) { skipped++; continue; }
-    const sym  = String(cols[COL_SYM] || '').trim().toUpperCase();
-    const name = String(cols[COL_NAME] || '').trim();
-    const qty  = cleanNum(cols[COL_QTY]);
-    const cost = cleanNum(cols[COL_COST]);
-    const cmp  = cleanNum(cols[COL_CMP]);
-    if (!sym || sym.length < 2) { skipped++; continue; }
-    if (isNaN(qty) || isNaN(cost) || qty <= 0 || cost <= 0) { skipped++; continue; }
-    const idx = portfolio.findIndex(p => p.sym === sym);
-    const entry = { sym, name, qty, cost, cmp: (!isNaN(cmp) && cmp > 0) ? cmp : cost, source:'icici', pe:0, roe:0, roce:0, de:0 };
+function applyResults(results, source) {
+  let count = 0;
+  for (const r of results) {
+    const idx = portfolio.findIndex(p => p.sym === r.sym);
+    const entry = { ...r, source, pe:0, roe:0, roce:0, de:0 };
     if (idx >= 0) portfolio[idx] = { ...portfolio[idx], ...entry };
     else { portfolio.push(entry); count++; }
   }
-  return { count, skipped };
-}
-
-/* ── File upload handlers ── */
-function handleFileInput(input) {
-  const file = input.files[0]; if (!file) return;
-  readCSVFile(file);
-  input.value = '';
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('file-zone').classList.remove('drag-over');
-  const file = e.dataTransfer.files[0]; if (!file) return;
-  readCSVFile(file);
-}
-
-function readCSVFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const text = e.target.result;
-    const preview = document.getElementById('file-preview');
-    const lines = text.split('\n').slice(0, 3).join('\n');
-    preview.textContent = 'Preview:\n' + lines;
-    preview.style.display = 'block';
-    const skipHeader = document.getElementById('file-header').checked;
-    const rows = parseCSVText(text);
-    const { count, skipped } = parseICICIRows(rows, skipHeader);
-    const msgEl = document.getElementById('file-msg');
-    if (count > 0) {
-      showMsg(msgEl, count + ' stock(s) imported! (' + skipped + ' rows skipped)', true);
-      renderPortfolio(); savePortfolio();
-    } else {
-      showMsg(msgEl, 'No stocks found. Make sure "Skip header row" is ticked and the file is a CSV from ICICI Direct.', false);
-    }
-  };
-  reader.onerror = () => showMsg(document.getElementById('file-msg'), 'Could not read file.', false);
-  reader.readAsText(file);
+  return count;
 }
 
 function importPaste() {
   const raw = document.getElementById('icici-paste').value.trim();
-  if (!raw) return;
-  const rows = parseCSVText(raw);
-  const skipHeader = document.getElementById('icici-header').checked;
-  const { count, skipped } = parseICICIRows(rows, skipHeader);
   const msgEl = document.getElementById('icici-msg');
-  if (count > 0) {
-    showMsg(msgEl, count + ' stock(s) imported! (' + skipped + ' rows skipped)', true);
+  const dbg = document.getElementById('debug-box');
+  if (!raw) { showMsg(msgEl, 'Please paste your CSV content first.', false); return; }
+
+  const { results, debug, headerSkipped } = parseICICI(raw);
+  dbg.textContent = 'Debug (first 8 rows parsed):\n' + debug.split('\n').slice(0,8).join('\n');
+  dbg.style.display = 'block';
+
+  if (results.length > 0) {
+    const count = applyResults(results, 'icici');
+    showMsg(msgEl, count + ' stock(s) imported successfully!', true);
     renderPortfolio(); savePortfolio();
   } else {
-    showMsg(msgEl, 'No stocks found. Check "Skip header row" is ticked.', false);
+    showMsg(msgEl, 'No stocks found. See debug info below.', false);
   }
+}
+
+function handleFileInput(input) {
+  const file = input.files[0]; if (!file) return;
+  readCSVFile(file, 'file-msg'); input.value = '';
+}
+
+function handleDrop(e) {
+  e.preventDefault(); document.getElementById('file-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  readCSVFile(file, 'file-msg');
+}
+
+function readCSVFile(file, msgId) {
+  const msgEl = document.getElementById(msgId);
+  const reader = new FileReader();
+  reader.onload = e => {
+    const { results, debug } = parseICICI(e.target.result);
+    const dbg = document.getElementById('debug-box');
+    dbg.textContent = 'Debug:\n' + debug.split('\n').slice(0,8).join('\n');
+    dbg.style.display = 'block';
+    if (results.length > 0) {
+      const count = applyResults(results, 'icici');
+      showMsg(msgEl, count + ' stock(s) imported!', true);
+      renderPortfolio(); savePortfolio();
+    } else {
+      showMsg(msgEl, 'No stocks found. Check debug info in the paste box area.', false);
+    }
+  };
+  reader.onerror = () => showMsg(msgEl, 'Could not read file. Try pasting instead.', false);
+  reader.readAsText(file);
 }
 
 function showMsg(elOrId, text, ok) {
   const el = typeof elOrId==='string' ? document.getElementById(elOrId) : elOrId;
   el.textContent = text; el.style.color = ok ? '#3B6D11' : '#A32D2D';
-  setTimeout(() => el.textContent = '', 5000);
+  setTimeout(() => el.textContent = '', 6000);
 }
 
 /* ── Scoring & signals ── */
 function scoreStock(s) {
   if (!s.pe && !s.roe && !s.roce && !s.de) return null;
   let sc = 0;
-  if (s.pe>0 && s.pe<15) sc+=25; else if (s.pe<25) sc+=15; else if (s.pe<35) sc+=8;
-  if (s.roe>=20) sc+=30; else if (s.roe>=15) sc+=20; else if (s.roe>=10) sc+=10;
-  if (s.roce>=20) sc+=25; else if (s.roce>=15) sc+=18; else if (s.roce>=10) sc+=8;
-  if (s.de<0.5) sc+=20; else if (s.de<1) sc+=12; else if (s.de<2) sc+=5;
-  return Math.min(sc, 100);
+  if(s.pe>0&&s.pe<15)sc+=25;else if(s.pe<25)sc+=15;else if(s.pe<35)sc+=8;
+  if(s.roe>=20)sc+=30;else if(s.roe>=15)sc+=20;else if(s.roe>=10)sc+=10;
+  if(s.roce>=20)sc+=25;else if(s.roce>=15)sc+=18;else if(s.roce>=10)sc+=8;
+  if(s.de<0.5)sc+=20;else if(s.de<1)sc+=12;else if(s.de<2)sc+=5;
+  return Math.min(sc,100);
 }
 
 function signal(s) {
-  const sc = scoreStock(s), pct = s.cost>0 ? ((s.cmp-s.cost)/s.cost)*100 : 0;
-  if (sc===null) {
-    if (pct>10) return ['HOLD','hold','Positive momentum; add fundamentals for full signal'];
-    if (pct<-10) return ['REVIEW','sell','Down significantly; add fundamentals from Screener.in'];
-    return ['HOLD','hold','Add P/E, ROE, ROCE in Add stock tab for full signal'];
+  const sc=scoreStock(s), pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
+  if(sc===null){
+    if(pct>10) return['HOLD','hold','Positive momentum; add fundamentals for full signal'];
+    if(pct<-10) return['REVIEW','sell','Down significantly; add fundamentals from Screener.in'];
+    return['HOLD','hold','Add P/E, ROE, ROCE in Add stock tab for full signal'];
   }
-  if (sc>=70 && pct>-5) return ['BUY','buy','Strong fundamentals; consider adding on dips'];
-  if (sc>=50 && pct>=0) return ['HOLD','hold','Good fundamentals; monitor quarterly results'];
-  if (sc<40) return ['SELL','sell','Weak fundamentals; review position'];
-  if (pct<-15 && sc<55) return ['SELL','sell','Down significantly with weak score'];
-  return ['HOLD','hold','Average fundamentals; watch for improvement'];
+  if(sc>=70&&pct>-5) return['BUY','buy','Strong fundamentals; consider adding on dips'];
+  if(sc>=50&&pct>=0) return['HOLD','hold','Good fundamentals; monitor quarterly results'];
+  if(sc<40) return['SELL','sell','Weak fundamentals; review position'];
+  if(pct<-15&&sc<55) return['SELL','sell','Down significantly with weak score'];
+  return['HOLD','hold','Average fundamentals; watch for improvement'];
 }
 
-function fmt(n) { return '\u20B9' + Number(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
-function fmtPct(n) { return (n>=0?'+':'') + Number(n).toFixed(2) + '%'; }
+function fmt(n){return'\u20B9'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:0});}
+function fmtPct(n){return(n>=0?'+':'')+Number(n).toFixed(2)+'%';}
 
 /* ── Render ── */
 function renderPortfolio() {
-  let inv=0, val=0;
-  if (!portfolio.length) {
+  let inv=0,val=0;
+  if(!portfolio.length){
     document.getElementById('holdings-body').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#888780">No holdings yet</td></tr>';
     document.getElementById('holdings-cards').innerHTML='<div class="card" style="text-align:center;color:#888780;font-size:13px;padding:20px">No holdings yet</div>';
-    updateMetrics(0,0); return;
+    updateMetrics(0,0);return;
   }
-  let rows='', cards='';
-  portfolio.forEach((s,i) => {
+  let rows='',cards='';
+  portfolio.forEach((s,i)=>{
     const pnl=(s.cmp-s.cost)*s.qty, pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
     inv+=s.cost*s.qty; val+=s.cmp*s.qty;
-    const [sig,cls]=signal(s);
-    const pnlColor=pnl>=0?'#3B6D11':'#A32D2D';
+    const[sig,cls]=signal(s), pc=pnl>=0?'#3B6D11':'#A32D2D';
     rows+=`<tr>
       <td style="font-weight:500">${s.sym}</td>
       <td style="color:#888780;font-size:11px">${s.name||''}</td>
       <td>${s.qty}</td><td>${fmt(s.cost)}</td><td>${fmt(s.cmp)}</td>
-      <td style="color:${pnlColor}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))}</td>
-      <td style="color:${pnlColor}">${fmtPct(pct)}</td>
+      <td style="color:${pc}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))}</td>
+      <td style="color:${pc}">${fmtPct(pct)}</td>
       <td><span class="badge badge-${cls}">${sig}</span></td>
       <td><button class="del-btn" onclick="remove(${i})">&#10005;</button></td>
     </tr>`;
@@ -486,7 +463,7 @@ function renderPortfolio() {
         <span style="font-size:12px;color:#888780">CMP ${fmt(s.cmp)}</span>
       </div>
       <div class="stock-card-sub">
-        <span style="font-size:13px;font-weight:500;color:${pnlColor}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))} (${fmtPct(pct)})</span>
+        <span style="font-size:13px;font-weight:500;color:${pc}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))} (${fmtPct(pct)})</span>
         <button class="del-btn" onclick="remove(${i})">&#10005;</button>
       </div>
     </div>`;
@@ -496,8 +473,8 @@ function renderPortfolio() {
   updateMetrics(inv,val);
 }
 
-function updateMetrics(inv,val) {
-  const pnl=val-inv, pct=inv>0?(pnl/inv)*100:0;
+function updateMetrics(inv,val){
+  const pnl=val-inv,pct=inv>0?(pnl/inv)*100:0;
   document.getElementById('m-invested').textContent=inv?fmt(inv):'\u2014';
   document.getElementById('m-value').textContent=val?fmt(val):'\u2014';
   const pe=document.getElementById('m-pnl');
@@ -506,10 +483,10 @@ function updateMetrics(inv,val) {
   document.getElementById('m-count').textContent=portfolio.length;
 }
 
-function renderAnalysis() {
+function renderAnalysis(){
   document.getElementById('analysis-stock').innerHTML='<option value="all">Entire portfolio</option>'+portfolio.map(s=>`<option value="${s.sym}">${s.sym}</option>`).join('');
   const tbody=document.getElementById('analysis-body');
-  if (!portfolio.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">Add stocks first</td></tr>';return;}
+  if(!portfolio.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">Add stocks first</td></tr>';return;}
   tbody.innerHTML=portfolio.map(s=>{
     const sc=scoreStock(s),nd=sc===null;
     const g=nd?null:sc>=75?['A','buy']:sc>=55?['B','hold']:['C','sell'];
@@ -517,14 +494,14 @@ function renderAnalysis() {
     return`<tr><td style="font-weight:500">${s.sym}</td>
       <td>${s.pe||'&mdash;'}</td><td>${s.roe?s.roe+'%':'&mdash;'}</td>
       <td>${s.roce?s.roce+'%':'&mdash;'}</td><td>${s.de||'&mdash;'}</td>
-      <td>${nd?'<span style="font-size:11px;color:#c8c7c0">Add data</span>':`<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill" style="width:${sc}%;background:${fc}"></div></div><span style="font-size:11px;min-width:24px">${sc}</span></div>`}</td>
+      <td>${nd?'<span style="font-size:11px;color:#aaa">Add data</span>':`<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill" style="width:${sc}%;background:${fc}"></div></div><span style="font-size:11px;min-width:24px">${sc}</span></div>`}</td>
       <td>${nd?'&mdash;':`<span class="badge badge-${g[1]}">${g[0]}</span>`}</td></tr>`;
   }).join('');
 }
 
-function refreshSignals() {
+function refreshSignals(){
   const tbody=document.getElementById('signals-body');
-  if (!portfolio.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#888780">Add stocks to generate signals</td></tr>';return;}
+  if(!portfolio.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#888780">Add stocks to generate signals</td></tr>';return;}
   tbody.innerHTML=portfolio.map(s=>{
     const sc=scoreStock(s),[sig,cls,reason]=signal(s);
     return`<tr><td style="font-weight:500">${s.sym}</td>
@@ -534,59 +511,59 @@ function refreshSignals() {
   }).join('');
 }
 
-function addManual() {
+function addManual(){
   const sym=document.getElementById('in-sym').value.trim().toUpperCase().replace(/\s+/g,'');
   const qty=parseFloat(document.getElementById('in-qty').value);
   const cost=parseFloat(document.getElementById('in-cost').value);
   const cmp=parseFloat(document.getElementById('in-cmp').value);
   const m=document.getElementById('add-msg');
-  if (!sym||!qty||!cost||!cmp){showMsg(m,'Fill symbol, qty, avg cost and CMP',false);return;}
+  if(!sym||!qty||!cost||!cmp){showMsg(m,'Fill symbol, qty, avg cost and CMP',false);return;}
   const idx=portfolio.findIndex(p=>p.sym===sym);
   const entry={sym,name:'',qty,cost,cmp,source:'manual',
     pe:parseFloat(document.getElementById('in-pe').value)||0,
     roe:parseFloat(document.getElementById('in-roe').value)||0,
     roce:parseFloat(document.getElementById('in-roce').value)||0,
     de:parseFloat(document.getElementById('in-de').value)||0};
-  if (idx>=0) portfolio[idx]=entry; else portfolio.push(entry);
+  if(idx>=0)portfolio[idx]=entry;else portfolio.push(entry);
   ['in-sym','in-qty','in-cost','in-cmp','in-pe','in-roe','in-roce','in-de'].forEach(id=>document.getElementById(id).value='');
   showMsg(m,sym+' added!',true);
-  renderPortfolio(); savePortfolio();
+  renderPortfolio();savePortfolio();
 }
 
-function populateFundSelect() {
-  document.getElementById('fund-stock').innerHTML='<option value="">Select stock</option>'+portfolio.map(s=>`<option value="${s.sym}">${s.sym} ${s.name?'('+s.name+')':''}</option>`).join('');
+function populateFundSelect(){
+  document.getElementById('fund-stock').innerHTML='<option value="">Select stock</option>'+portfolio.map(s=>`<option value="${s.sym}">${s.sym}${s.name?' - '+s.name:''}</option>`).join('');
 }
 
-function updateFundamentals() {
-  const sym=document.getElementById('fund-stock').value; if (!sym) return;
-  const idx=portfolio.findIndex(p=>p.sym===sym); if (idx<0) return;
+function updateFundamentals(){
+  const sym=document.getElementById('fund-stock').value;if(!sym)return;
+  const idx=portfolio.findIndex(p=>p.sym===sym);if(idx<0)return;
   ['pe','roe','roce','de'].forEach(k=>{const v=parseFloat(document.getElementById('fund-'+k).value);if(!isNaN(v)&&v>0)portfolio[idx][k]=v;});
   showMsg('fund-msg',sym+' updated!',true);
-  renderPortfolio(); savePortfolio();
+  renderPortfolio();savePortfolio();
 }
 
 function remove(i){portfolio.splice(i,1);renderPortfolio();renderAnalysis();refreshSignals();populateFundSelect();savePortfolio();}
 
-function exportData() {
-  if (!portfolio.length) return;
+function exportData(){
+  if(!portfolio.length)return;
   const rows=['Symbol,Company,Qty,AvgCost,CMP,PE,ROE,ROCE,DE',
     ...portfolio.map(s=>`${s.sym},"${s.name||''}",${s.qty},${s.cost},${s.cmp},${s.pe||''},${s.roe||''},${s.roce||''},${s.de||''}`)].join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows);
-  a.download='portfolio_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  a.download='portfolio_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
-function clearAll() {
-  if (!confirm('Clear all holdings? This cannot be undone.')) return;
-  portfolio=[]; localStorage.removeItem('nse_portfolio');
-  renderPortfolio(); renderAnalysis(); refreshSignals(); populateFundSelect();
+function clearAll(){
+  if(!confirm('Clear all holdings? This cannot be undone.'))return;
+  portfolio=[];localStorage.removeItem('nse_portfolio');
+  renderPortfolio();renderAnalysis();refreshSignals();populateFundSelect();
 }
 
-async function callClaude(prompt, elId) {
+async function callClaude(prompt,elId){
   const el=document.getElementById(elId);
-  el.style.display='block'; el.textContent='Analysing with Claude...';
-  if (!apiKey){el.textContent='Please enter your Anthropic API key in the green bar at the top.';return;}
-  try {
+  el.style.display='block';el.textContent='Analysing with Claude...';
+  if(!apiKey){el.textContent='Please enter your Anthropic API key in the green bar at the top.';return;}
+  try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -594,26 +571,26 @@ async function callClaude(prompt, elId) {
     });
     const d=await res.json();
     el.textContent=d.content?.find(c=>c.type==='text')?.text||(d.error?.message||'No response.');
-  } catch(e){el.textContent='API call failed. Check your key and internet connection.';}
+  }catch(e){el.textContent='API call failed. Check your key and internet connection.';}
 }
 
-async function askClaude(type) {
-  if (!portfolio.length){document.getElementById('ai-response').textContent='Add stocks first.';return;}
+async function askClaude(type){
+  if(!portfolio.length){document.getElementById('ai-response').textContent='Add stocks first.';return;}
   const sel=document.getElementById('analysis-stock').value;
   const data=sel==='all'?portfolio:portfolio.filter(s=>s.sym===sel);
   const sum=data.map(s=>{const sc=scoreStock(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
     return`${s.sym}${s.name?' ('+s.name+')':''}: Qty=${s.qty}, AvgCost=Rs${s.cost}, CMP=Rs${s.cmp}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%, ROCE=${s.roce||'N/A'}%, D/E=${s.de||'N/A'}, Score=${sc!==null?sc+'/100':'No fundamentals'}`;
   }).join('\n');
   const prompts={
-    review:`You are a seasoned Indian equity analyst. Review this NSE/BSE portfolio: (1) Overall health, (2) Top 2 strong holdings, (3) Top 2 concerns, (4) One actionable recommendation. Be concise.\n\n${sum}`,
+    review:`You are a seasoned Indian equity analyst. Review this NSE/BSE portfolio: (1) Overall health, (2) Top 2 strong holdings, (3) Top 2 concerns, (4) One actionable recommendation.\n\n${sum}`,
     risks:`You are a risk analyst for Indian equity markets. Top 3 risks: what it is, which stocks, how to mitigate.\n\n${sum}`,
     compare:`Compare these Indian stocks on fundamentals. Rank strongest to weakest with key differences.\n\n${sum}`
   };
   await callClaude(prompts[type],'ai-response');
 }
 
-async function askClaudeSignals() {
-  if (!portfolio.length) return;
+async function askClaudeSignals(){
+  if(!portfolio.length)return;
   const sum=portfolio.map(s=>{const sc=scoreStock(s),[sig]=signal(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
     return`${s.sym}: Signal=${sig}, Score=${sc!==null?sc+'/100':'No fundamentals'}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%`;
   }).join('\n');
