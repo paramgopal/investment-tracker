@@ -47,7 +47,7 @@
   .btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
   .btn-primary:hover{background:#333}
   .form-footer{display:flex;gap:8px;align-items:center;margin-bottom:.75rem;flex-wrap:wrap}
-  .paste-area{height:90px;font-family:monospace;resize:vertical}
+  .paste-area{height:100px;font-family:monospace;resize:vertical;font-size:11px}
   .ai-out{background:#f5f5f0;border-radius:8px;padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;min-height:44px;color:#1a1a18}
   .score-bar-wrap{display:flex;align-items:center;gap:6px;min-width:80px}
   .score-bar{height:5px;border-radius:3px;background:#e0dfd8;flex:1;overflow:hidden}
@@ -77,10 +77,9 @@
   .api-bar input{flex:1;min-width:180px;font-family:monospace;font-size:12px}
   .api-status{font-size:11px;color:#3B6D11;white-space:nowrap}
   .save-banner{background:#E6F1FB;border:0.5px solid #85B7EB;border-radius:8px;padding:8px 14px;margin-bottom:1rem;font-size:12px;color:#185FA5}
-  .progress-bar{height:4px;border-radius:2px;background:#e0dfd8;margin-bottom:10px;overflow:hidden;display:none}
-  .progress-fill{height:100%;border-radius:2px;background:#185FA5;width:0%;transition:width .3s}
   .tip-box{background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:10px 14px;font-size:12px;color:#854F0B;margin-bottom:10px;line-height:1.6}
   .tip-box strong{font-weight:500}
+  .preview-box{background:#f5f5f0;border-radius:8px;padding:10px;font-size:11px;font-family:monospace;margin-bottom:8px;color:#5F5E5A;max-height:80px;overflow:auto;display:none}
 </style>
 </head>
 <body>
@@ -130,8 +129,8 @@
       <div class="tbl-wrap">
         <table>
           <thead><tr>
-            <th>Symbol</th><th>Qty</th><th>Avg cost</th><th>CMP</th>
-            <th>P&amp;L (&#8377;)</th><th>P&amp;L %</th><th>Source</th><th>Signal</th><th></th>
+            <th>Symbol</th><th>Company</th><th>Qty</th><th>Avg cost</th><th>CMP</th>
+            <th>P&amp;L (&#8377;)</th><th>P&amp;L %</th><th>Signal</th><th></th>
           </tr></thead>
           <tbody id="holdings-body"><tr><td colspan="9" style="text-align:center;padding:24px;color:#888780">No holdings yet</td></tr></tbody>
         </table>
@@ -145,50 +144,55 @@
       <div class="card-title">How to export from ICICI Direct</div>
       <div class="step-box"><div class="step-num">1</div><div class="step-text">Log in to <strong>icicidirect.com</strong> &rarr; click <strong>Portfolio</strong> in the top menu</div></div>
       <div class="step-box"><div class="step-num">2</div><div class="step-text">Open <strong>Portfolio Beta</strong> &rarr; click the <strong>Download</strong> button (top right of the table)</div></div>
-      <div class="step-box"><div class="step-num">3</div><div class="step-text">Choose <strong>CSV</strong> format (recommended) and save to your device</div></div>
-      <div class="step-box"><div class="step-num">4</div><div class="step-text">Upload the CSV below, or open it in Excel/Notepad, copy the rows and paste into the text box</div></div>
+      <div class="step-box"><div class="step-num">3</div><div class="step-text">Choose <strong>CSV</strong> format and save to your device</div></div>
+      <div class="step-box"><div class="step-num">4</div><div class="step-text">Upload the CSV below using the upload area, or paste the contents into the text box</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ICICI Direct CSV column format (auto-detected)</div>
+      <div class="col-map">
+        <div class="col-pill">Col 1: <span>Stock symbol</span></div>
+        <div class="col-pill">Col 2: <span>Company name</span></div>
+        <div class="col-pill">Col 3: <span>ISIN code</span></div>
+        <div class="col-pill">Col 4: <span>Qty</span></div>
+        <div class="col-pill">Col 5: <span>Avg cost price</span></div>
+        <div class="col-pill">Col 6: <span>Current market price</span></div>
+      </div>
+      <p class="card-sub" style="margin-top:6px">The app reads columns 1, 4, 5 and 6. All other columns are ignored.</p>
     </div>
 
     <div class="card">
       <div class="card-title">Upload CSV file</div>
-      <div class="tip-box"><strong>Tip:</strong> Use the CSV format from ICICI Direct for best results. If your file has a header row, tick "Skip header row" below before importing.</div>
-      <div class="progress-bar" id="upload-progress"><div class="progress-fill" id="upload-progress-fill"></div></div>
+      <div class="tip-box"><strong>Important:</strong> Tick "Skip header row" before importing — your ICICI CSV has a header row with column names.</div>
       <div class="file-zone" id="file-zone"
         ondragover="event.preventDefault();this.classList.add('drag-over')"
         ondragleave="this.classList.remove('drag-over')"
         ondrop="handleDrop(event)"
         onclick="document.getElementById('file-input').click()">
         <div class="file-zone-icon">&#128196;</div>
-        <div class="file-zone-label">Click to upload or drag &amp; drop your CSV file here</div>
-        <div class="file-zone-sub">Supports .csv files exported from ICICI Direct</div>
+        <div class="file-zone-label">Click to upload or drag &amp; drop your ICICI Direct CSV</div>
+        <div class="file-zone-sub">.csv files only</div>
       </div>
       <input type="file" id="file-input" accept=".csv,.txt" style="display:none" onchange="handleFileInput(this)">
+      <div id="file-preview" class="preview-box"></div>
       <div class="form-footer">
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#888780;cursor:pointer">
-          <input type="checkbox" id="file-header" style="width:auto"> Skip header row
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;font-weight:500">
+          <input type="checkbox" id="file-header" style="width:auto" checked> Skip header row
         </label>
         <span id="file-msg" style="font-size:12px"></span>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">Or paste rows directly</div>
-      <p class="card-sub">Open your downloaded file in Excel or Notepad, select all data rows (skip the header), copy and paste here:</p>
-      <div class="col-map">
-        <div class="col-pill">Col 1: <span>Stock name</span></div>
-        <div class="col-pill">Col 2: <span>Quantity</span></div>
-        <div class="col-pill">Col 3: <span>Avg cost</span></div>
-        <div class="col-pill">Col 4: <span>CMP</span></div>
-        <div class="col-pill">Col 5: <span>Invested value</span></div>
-        <div class="col-pill">Col 6: <span>Current value</span></div>
-      </div>
-      <textarea class="paste-area" id="icici-paste" placeholder="RELIANCE INDUSTRIES&#9;50&#9;2400.00&#9;2510.50&#10;HDFC BANK&#9;30&#9;1580.00&#9;1545.20&#10;INFOSYS&#9;40&#9;1450.00&#9;1490.75"></textarea>
+      <div class="card-title">Or paste CSV contents directly</div>
+      <p class="card-sub">Open your downloaded CSV in Notepad, press Ctrl+A to select all, Ctrl+C to copy, then paste here:</p>
+      <textarea class="paste-area" id="icici-paste" placeholder="Paste your ICICI Direct CSV contents here..."></textarea>
       <div class="form-footer" style="margin-top:6px">
-        <button class="btn-primary" onclick="importICICI()">Import pasted rows</button>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#888780;cursor:pointer">
-          <input type="checkbox" id="icici-header" style="width:auto"> Skip header row
+        <button class="btn-primary" onclick="importPaste()">Import pasted content</button>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;font-weight:500">
+          <input type="checkbox" id="icici-header" style="width:auto" checked> Skip header row
         </label>
-        <span id="icici-msg" style="font-size:12px;color:#3B6D11"></span>
+        <span id="icici-msg" style="font-size:12px"></span>
       </div>
     </div>
   </div>
@@ -278,6 +282,13 @@
 let portfolio = [];
 let apiKey = '';
 
+/* ── ICICI Direct CSV column indices (0-based) ── */
+const COL_SYM  = 0;  // Stock Symbol
+const COL_NAME = 1;  // Company Name
+const COL_QTY  = 3;  // Qty
+const COL_COST = 4;  // Average Cost Price
+const COL_CMP  = 5;  // Current Market Price
+
 function init() {
   try { portfolio = JSON.parse(localStorage.getItem('nse_portfolio') || '[]'); } catch(e) { portfolio = []; }
   if (portfolio.length) {
@@ -300,8 +311,7 @@ function saveApiKey(v) {
 
 function savePortfolio() {
   localStorage.setItem('nse_portfolio', JSON.stringify(portfolio));
-  const ind = document.getElementById('save-indicator');
-  ind.textContent = 'Saved ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('save-indicator').textContent = 'Saved ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 }
 
 function switchTab(t, btn) {
@@ -309,96 +319,60 @@ function switchTab(t, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + t).classList.add('active');
-  if (t === 'analysis') renderAnalysis();
-  if (t === 'signals') refreshSignals();
-  if (t === 'portfolio') renderPortfolio();
-  if (t === 'add') populateFundSelect();
+  if (t==='analysis') renderAnalysis();
+  if (t==='signals') refreshSignals();
+  if (t==='portfolio') renderPortfolio();
+  if (t==='add') populateFundSelect();
 }
 
-function scoreStock(s) {
-  if (!s.pe && !s.roe && !s.roce && !s.de) return null;
-  let sc = 0;
-  if (s.pe > 0 && s.pe < 15) sc += 25; else if (s.pe < 25) sc += 15; else if (s.pe < 35) sc += 8;
-  if (s.roe >= 20) sc += 30; else if (s.roe >= 15) sc += 20; else if (s.roe >= 10) sc += 10;
-  if (s.roce >= 20) sc += 25; else if (s.roce >= 15) sc += 18; else if (s.roce >= 10) sc += 8;
-  if (s.de < 0.5) sc += 20; else if (s.de < 1) sc += 12; else if (s.de < 2) sc += 5;
-  return Math.min(sc, 100);
-}
-
-function signal(s) {
-  const sc = scoreStock(s), pct = s.cost > 0 ? ((s.cmp - s.cost) / s.cost) * 100 : 0;
-  if (sc === null) {
-    if (pct > 10) return ['HOLD','hold','Positive momentum; add fundamentals for full signal'];
-    if (pct < -10) return ['REVIEW','sell','Down significantly; add fundamentals from Screener.in'];
-    return ['HOLD','hold','Add P/E, ROE, ROCE for a full signal'];
+/* ── Robust CSV parser — handles quoted fields, trailing commas ── */
+function parseCSVLine(line) {
+  const cols = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQ = !inQ; continue; }
+    if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; continue; }
+    cur += ch;
   }
-  if (sc >= 70 && pct > -5) return ['BUY','buy','Strong fundamentals; consider adding on dips'];
-  if (sc >= 50 && pct >= 0) return ['HOLD','hold','Good fundamentals; monitor quarterly results'];
-  if (sc < 40) return ['SELL','sell','Weak fundamentals; review position'];
-  if (pct < -15 && sc < 55) return ['SELL','sell','Down significantly with weak score'];
-  return ['HOLD','hold','Average fundamentals; watch for improvement'];
+  cols.push(cur.trim());
+  return cols;
 }
 
-function fmt(n) { return '\u20B9' + Number(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
-function fmtPct(n) { return (n>=0?'+':'') + Number(n).toFixed(2) + '%'; }
-
-function cleanSym(r) {
-  if (!r) return '';
-  let s = String(r).trim().toUpperCase();
-  s = s.replace(/\s+(LIMITED|LTD\.?|INDUSTRIES|BANK|FINANCE|CORP\.?|CORPORATION)$/i, '');
-  return s.replace(/\s+/g, '');
+function parseCSVText(text) {
+  return text.split(/\r?\n/).filter(l => l.trim()).map(parseCSVLine);
 }
 
-/* ── CSV parser (handles quoted fields, commas inside quotes) ── */
-function parseCSV(text) {
-  const rows = [];
-  const lines = text.split(/\r?\n/);
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') { inQ = !inQ; }
-      else if ((ch === ',' || ch === '\t') && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur.trim());
-    rows.push(cols);
-  }
-  return rows;
+function cleanNum(v) {
+  if (v === undefined || v === null) return NaN;
+  return parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
 }
 
-function parseRows(rows, source) {
-  let count = 0;
-  for (const cols of rows) {
-    if (cols.length < 3) continue;
-    const sym = cleanSym(cols[0]);
-    if (!sym || sym.length < 2) continue;
-    const qty  = parseFloat(String(cols[1]).replace(/,/g,''));
-    const cost = parseFloat(String(cols[2]).replace(/[,\u20B9Rs]/g,''));
-    const cmp  = parseFloat(String(cols[3] || cols[2]).replace(/[,\u20B9Rs]/g,''));
-    if (isNaN(qty) || isNaN(cost) || qty <= 0) continue;
+/* ── ICICI Direct specific parser ── */
+function parseICICIRows(rows, skipHeader) {
+  const data = skipHeader ? rows.slice(1) : rows;
+  let count = 0, skipped = 0;
+  for (const cols of data) {
+    if (cols.length < 6) { skipped++; continue; }
+    const sym  = String(cols[COL_SYM] || '').trim().toUpperCase();
+    const name = String(cols[COL_NAME] || '').trim();
+    const qty  = cleanNum(cols[COL_QTY]);
+    const cost = cleanNum(cols[COL_COST]);
+    const cmp  = cleanNum(cols[COL_CMP]);
+    if (!sym || sym.length < 2) { skipped++; continue; }
+    if (isNaN(qty) || isNaN(cost) || qty <= 0 || cost <= 0) { skipped++; continue; }
     const idx = portfolio.findIndex(p => p.sym === sym);
-    const entry = { sym, qty, cost, cmp: (!isNaN(cmp) && cmp > 0) ? cmp : cost, source, pe:0, roe:0, roce:0, de:0 };
+    const entry = { sym, name, qty, cost, cmp: (!isNaN(cmp) && cmp > 0) ? cmp : cost, source:'icici', pe:0, roe:0, roce:0, de:0 };
     if (idx >= 0) portfolio[idx] = { ...portfolio[idx], ...entry };
     else { portfolio.push(entry); count++; }
   }
-  return count;
+  return { count, skipped };
 }
 
-/* ── File upload via FileReader (works on GitHub Pages) ── */
-function processCSVText(text, skipHeader, msgEl) {
-  const rows = parseCSV(text);
-  const data = skipHeader ? rows.slice(1) : rows;
-  const count = parseRows(data, 'icici');
-  showMsg(msgEl, count ? count + ' stock(s) imported successfully!' : 'Could not parse file — check format or paste rows manually.', count > 0);
-  if (count > 0) { renderPortfolio(); savePortfolio(); }
-}
-
+/* ── File upload handlers ── */
 function handleFileInput(input) {
   const file = input.files[0]; if (!file) return;
-  readFile(file, document.getElementById('file-header').checked, 'file-msg');
+  readCSVFile(file);
   input.value = '';
 }
 
@@ -406,153 +380,200 @@ function handleDrop(e) {
   e.preventDefault();
   document.getElementById('file-zone').classList.remove('drag-over');
   const file = e.dataTransfer.files[0]; if (!file) return;
-  readFile(file, document.getElementById('file-header').checked, 'file-msg');
+  readCSVFile(file);
 }
 
-function readFile(file, skipHeader, msgId) {
-  const msgEl = document.getElementById(msgId);
-  const prog = document.getElementById('upload-progress');
-  const fill = document.getElementById('upload-progress-fill');
-  prog.style.display = 'block'; fill.style.width = '30%';
+function readCSVFile(file) {
   const reader = new FileReader();
-  reader.onprogress = e => { if (e.lengthComputable) fill.style.width = (e.loaded/e.total*80)+'%'; };
   reader.onload = e => {
-    fill.style.width = '100%';
-    setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0%'; }, 600);
-    processCSVText(e.target.result, skipHeader, msgEl);
+    const text = e.target.result;
+    const preview = document.getElementById('file-preview');
+    const lines = text.split('\n').slice(0, 3).join('\n');
+    preview.textContent = 'Preview:\n' + lines;
+    preview.style.display = 'block';
+    const skipHeader = document.getElementById('file-header').checked;
+    const rows = parseCSVText(text);
+    const { count, skipped } = parseICICIRows(rows, skipHeader);
+    const msgEl = document.getElementById('file-msg');
+    if (count > 0) {
+      showMsg(msgEl, count + ' stock(s) imported! (' + skipped + ' rows skipped)', true);
+      renderPortfolio(); savePortfolio();
+    } else {
+      showMsg(msgEl, 'No stocks found. Make sure "Skip header row" is ticked and the file is a CSV from ICICI Direct.', false);
+    }
   };
-  reader.onerror = () => { prog.style.display = 'none'; showMsg(msgEl, 'Could not read file. Try pasting the rows instead.', false); };
+  reader.onerror = () => showMsg(document.getElementById('file-msg'), 'Could not read file.', false);
   reader.readAsText(file);
 }
 
-function importICICI() {
-  const raw = document.getElementById('icici-paste').value.trim(); if (!raw) return;
-  const rows = parseCSV(raw);
-  const data = document.getElementById('icici-header').checked ? rows.slice(1) : rows;
-  const count = parseRows(data, 'icici');
-  showMsg('icici-msg', count ? count + ' stock(s) imported!' : 'Could not parse — check format', count > 0);
-  if (count > 0) { renderPortfolio(); savePortfolio(); }
+function importPaste() {
+  const raw = document.getElementById('icici-paste').value.trim();
+  if (!raw) return;
+  const rows = parseCSVText(raw);
+  const skipHeader = document.getElementById('icici-header').checked;
+  const { count, skipped } = parseICICIRows(rows, skipHeader);
+  const msgEl = document.getElementById('icici-msg');
+  if (count > 0) {
+    showMsg(msgEl, count + ' stock(s) imported! (' + skipped + ' rows skipped)', true);
+    renderPortfolio(); savePortfolio();
+  } else {
+    showMsg(msgEl, 'No stocks found. Check "Skip header row" is ticked.', false);
+  }
 }
 
 function showMsg(elOrId, text, ok) {
-  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+  const el = typeof elOrId==='string' ? document.getElementById(elOrId) : elOrId;
   el.textContent = text; el.style.color = ok ? '#3B6D11' : '#A32D2D';
-  setTimeout(() => el.textContent = '', 4000);
+  setTimeout(() => el.textContent = '', 5000);
 }
 
+/* ── Scoring & signals ── */
+function scoreStock(s) {
+  if (!s.pe && !s.roe && !s.roce && !s.de) return null;
+  let sc = 0;
+  if (s.pe>0 && s.pe<15) sc+=25; else if (s.pe<25) sc+=15; else if (s.pe<35) sc+=8;
+  if (s.roe>=20) sc+=30; else if (s.roe>=15) sc+=20; else if (s.roe>=10) sc+=10;
+  if (s.roce>=20) sc+=25; else if (s.roce>=15) sc+=18; else if (s.roce>=10) sc+=8;
+  if (s.de<0.5) sc+=20; else if (s.de<1) sc+=12; else if (s.de<2) sc+=5;
+  return Math.min(sc, 100);
+}
+
+function signal(s) {
+  const sc = scoreStock(s), pct = s.cost>0 ? ((s.cmp-s.cost)/s.cost)*100 : 0;
+  if (sc===null) {
+    if (pct>10) return ['HOLD','hold','Positive momentum; add fundamentals for full signal'];
+    if (pct<-10) return ['REVIEW','sell','Down significantly; add fundamentals from Screener.in'];
+    return ['HOLD','hold','Add P/E, ROE, ROCE in Add stock tab for full signal'];
+  }
+  if (sc>=70 && pct>-5) return ['BUY','buy','Strong fundamentals; consider adding on dips'];
+  if (sc>=50 && pct>=0) return ['HOLD','hold','Good fundamentals; monitor quarterly results'];
+  if (sc<40) return ['SELL','sell','Weak fundamentals; review position'];
+  if (pct<-15 && sc<55) return ['SELL','sell','Down significantly with weak score'];
+  return ['HOLD','hold','Average fundamentals; watch for improvement'];
+}
+
+function fmt(n) { return '\u20B9' + Number(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+function fmtPct(n) { return (n>=0?'+':'') + Number(n).toFixed(2) + '%'; }
+
+/* ── Render ── */
 function renderPortfolio() {
-  let inv = 0, val = 0;
+  let inv=0, val=0;
   if (!portfolio.length) {
-    document.getElementById('holdings-body').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#888780">No holdings yet</td></tr>';
-    document.getElementById('holdings-cards').innerHTML = '<div class="card" style="text-align:center;color:#888780;font-size:13px;padding:20px">No holdings yet</div>';
+    document.getElementById('holdings-body').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#888780">No holdings yet</td></tr>';
+    document.getElementById('holdings-cards').innerHTML='<div class="card" style="text-align:center;color:#888780;font-size:13px;padding:20px">No holdings yet</div>';
     updateMetrics(0,0); return;
   }
-  let rows = '', cards = '';
+  let rows='', cards='';
   portfolio.forEach((s,i) => {
-    const pnl = (s.cmp - s.cost) * s.qty;
-    const pct = s.cost > 0 ? ((s.cmp - s.cost) / s.cost) * 100 : 0;
-    inv += s.cost * s.qty; val += s.cmp * s.qty;
-    const [sig,cls] = signal(s);
-    const srcBg = s.source==='icici'?'#E6F1FB':'#f1efe8', srcC = s.source==='icici'?'#185FA5':'#5F5E5A';
-    rows += `<tr>
-      <td style="font-weight:500">${s.sym}</td><td>${s.qty}</td><td>${fmt(s.cost)}</td><td>${fmt(s.cmp)}</td>
-      <td style="color:${pnl>=0?'#3B6D11':'#A32D2D'}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))}</td>
-      <td style="color:${pct>=0?'#3B6D11':'#A32D2D'}">${fmtPct(pct)}</td>
-      <td><span style="font-size:10px;background:${srcBg};color:${srcC};padding:1px 5px;border-radius:3px">${s.source==='icici'?'ICICI':'Manual'}</span></td>
+    const pnl=(s.cmp-s.cost)*s.qty, pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
+    inv+=s.cost*s.qty; val+=s.cmp*s.qty;
+    const [sig,cls]=signal(s);
+    const pnlColor=pnl>=0?'#3B6D11':'#A32D2D';
+    rows+=`<tr>
+      <td style="font-weight:500">${s.sym}</td>
+      <td style="color:#888780;font-size:11px">${s.name||''}</td>
+      <td>${s.qty}</td><td>${fmt(s.cost)}</td><td>${fmt(s.cmp)}</td>
+      <td style="color:${pnlColor}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))}</td>
+      <td style="color:${pnlColor}">${fmtPct(pct)}</td>
       <td><span class="badge badge-${cls}">${sig}</span></td>
       <td><button class="del-btn" onclick="remove(${i})">&#10005;</button></td>
     </tr>`;
-    cards += `<div class="stock-card">
+    cards+=`<div class="stock-card">
       <div class="stock-card-row"><span style="font-weight:500;font-size:14px">${s.sym}</span><span class="badge badge-${cls}">${sig}</span></div>
-      <div class="stock-card-sub" style="margin-bottom:4px">
+      <div style="font-size:11px;color:#888780;margin-bottom:4px">${s.name||''}</div>
+      <div class="stock-card-sub" style="margin-bottom:3px">
         <span style="font-size:12px;color:#888780">Qty ${s.qty} &middot; Avg ${fmt(s.cost)}</span>
         <span style="font-size:12px;color:#888780">CMP ${fmt(s.cmp)}</span>
       </div>
       <div class="stock-card-sub">
-        <span style="font-size:13px;font-weight:500;color:${pnl>=0?'#3B6D11':'#A32D2D'}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))} (${fmtPct(pct)})</span>
+        <span style="font-size:13px;font-weight:500;color:${pnlColor}">${pnl>=0?'+':'&minus;'}${fmt(Math.abs(pnl))} (${fmtPct(pct)})</span>
         <button class="del-btn" onclick="remove(${i})">&#10005;</button>
       </div>
     </div>`;
   });
-  document.getElementById('holdings-body').innerHTML = rows;
-  document.getElementById('holdings-cards').innerHTML = cards;
-  updateMetrics(inv, val);
+  document.getElementById('holdings-body').innerHTML=rows;
+  document.getElementById('holdings-cards').innerHTML=cards;
+  updateMetrics(inv,val);
 }
 
 function updateMetrics(inv,val) {
   const pnl=val-inv, pct=inv>0?(pnl/inv)*100:0;
-  document.getElementById('m-invested').textContent = inv ? fmt(inv) : '\u2014';
-  document.getElementById('m-value').textContent   = val ? fmt(val) : '\u2014';
-  const pe = document.getElementById('m-pnl');
-  pe.textContent = inv ? (fmt(Math.abs(pnl)) + ' ' + fmtPct(pct)) : '\u2014';
-  pe.className = 'metric-value ' + (pnl>=0?'up':'down');
-  document.getElementById('m-count').textContent = portfolio.length;
+  document.getElementById('m-invested').textContent=inv?fmt(inv):'\u2014';
+  document.getElementById('m-value').textContent=val?fmt(val):'\u2014';
+  const pe=document.getElementById('m-pnl');
+  pe.textContent=inv?(fmt(Math.abs(pnl))+' '+fmtPct(pct)):'\u2014';
+  pe.className='metric-value '+(pnl>=0?'up':'down');
+  document.getElementById('m-count').textContent=portfolio.length;
 }
 
 function renderAnalysis() {
-  document.getElementById('analysis-stock').innerHTML = '<option value="all">Entire portfolio</option>' + portfolio.map(s=>`<option value="${s.sym}">${s.sym}</option>`).join('');
-  const tbody = document.getElementById('analysis-body');
-  if (!portfolio.length) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">Add stocks first</td></tr>'; return; }
-  tbody.innerHTML = portfolio.map(s => {
-    const sc=scoreStock(s), nd=sc===null;
+  document.getElementById('analysis-stock').innerHTML='<option value="all">Entire portfolio</option>'+portfolio.map(s=>`<option value="${s.sym}">${s.sym}</option>`).join('');
+  const tbody=document.getElementById('analysis-body');
+  if (!portfolio.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#888780">Add stocks first</td></tr>';return;}
+  tbody.innerHTML=portfolio.map(s=>{
+    const sc=scoreStock(s),nd=sc===null;
     const g=nd?null:sc>=75?['A','buy']:sc>=55?['B','hold']:['C','sell'];
     const fc=nd?'#e0dfd8':sc>=75?'#639922':sc>=55?'#BA7517':'#E24B4A';
-    return `<tr><td style="font-weight:500">${s.sym}</td>
-      <td>${s.pe||'&mdash;'}</td><td>${s.roe?s.roe+'%':'&mdash;'}</td><td>${s.roce?s.roce+'%':'&mdash;'}</td><td>${s.de||'&mdash;'}</td>
+    return`<tr><td style="font-weight:500">${s.sym}</td>
+      <td>${s.pe||'&mdash;'}</td><td>${s.roe?s.roe+'%':'&mdash;'}</td>
+      <td>${s.roce?s.roce+'%':'&mdash;'}</td><td>${s.de||'&mdash;'}</td>
       <td>${nd?'<span style="font-size:11px;color:#c8c7c0">Add data</span>':`<div class="score-bar-wrap"><div class="score-bar"><div class="score-fill" style="width:${sc}%;background:${fc}"></div></div><span style="font-size:11px;min-width:24px">${sc}</span></div>`}</td>
       <td>${nd?'&mdash;':`<span class="badge badge-${g[1]}">${g[0]}</span>`}</td></tr>`;
   }).join('');
 }
 
 function refreshSignals() {
-  const tbody = document.getElementById('signals-body');
-  if (!portfolio.length) { tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#888780">Add stocks to generate signals</td></tr>'; return; }
-  tbody.innerHTML = portfolio.map(s => {
-    const sc=scoreStock(s), [sig,cls,reason]=signal(s);
-    return `<tr><td style="font-weight:500">${s.sym}</td><td><span class="badge badge-${cls}">${sig}</span></td><td>${sc!==null?sc+'/100':'&mdash;'}</td><td style="color:#888780;font-size:11px;white-space:normal">${reason}</td></tr>`;
+  const tbody=document.getElementById('signals-body');
+  if (!portfolio.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#888780">Add stocks to generate signals</td></tr>';return;}
+  tbody.innerHTML=portfolio.map(s=>{
+    const sc=scoreStock(s),[sig,cls,reason]=signal(s);
+    return`<tr><td style="font-weight:500">${s.sym}</td>
+      <td><span class="badge badge-${cls}">${sig}</span></td>
+      <td>${sc!==null?sc+'/100':'&mdash;'}</td>
+      <td style="color:#888780;font-size:11px;white-space:normal">${reason}</td></tr>`;
   }).join('');
 }
 
 function addManual() {
-  const sym = document.getElementById('in-sym').value.trim().toUpperCase().replace(/\s+/g,'');
-  const qty = parseFloat(document.getElementById('in-qty').value);
-  const cost= parseFloat(document.getElementById('in-cost').value);
-  const cmp = parseFloat(document.getElementById('in-cmp').value);
-  const m = document.getElementById('add-msg');
-  if (!sym||!qty||!cost||!cmp) { showMsg(m,'Fill symbol, qty, avg cost and CMP',false); return; }
-  const idx = portfolio.findIndex(p=>p.sym===sym);
-  const entry = {sym,qty,cost,cmp,source:'manual',
+  const sym=document.getElementById('in-sym').value.trim().toUpperCase().replace(/\s+/g,'');
+  const qty=parseFloat(document.getElementById('in-qty').value);
+  const cost=parseFloat(document.getElementById('in-cost').value);
+  const cmp=parseFloat(document.getElementById('in-cmp').value);
+  const m=document.getElementById('add-msg');
+  if (!sym||!qty||!cost||!cmp){showMsg(m,'Fill symbol, qty, avg cost and CMP',false);return;}
+  const idx=portfolio.findIndex(p=>p.sym===sym);
+  const entry={sym,name:'',qty,cost,cmp,source:'manual',
     pe:parseFloat(document.getElementById('in-pe').value)||0,
     roe:parseFloat(document.getElementById('in-roe').value)||0,
     roce:parseFloat(document.getElementById('in-roce').value)||0,
     de:parseFloat(document.getElementById('in-de').value)||0};
   if (idx>=0) portfolio[idx]=entry; else portfolio.push(entry);
   ['in-sym','in-qty','in-cost','in-cmp','in-pe','in-roe','in-roce','in-de'].forEach(id=>document.getElementById(id).value='');
-  showMsg(m, sym+' added!', true);
+  showMsg(m,sym+' added!',true);
   renderPortfolio(); savePortfolio();
 }
 
 function populateFundSelect() {
-  document.getElementById('fund-stock').innerHTML = '<option value="">Select stock</option>' + portfolio.map(s=>`<option value="${s.sym}">${s.sym}</option>`).join('');
+  document.getElementById('fund-stock').innerHTML='<option value="">Select stock</option>'+portfolio.map(s=>`<option value="${s.sym}">${s.sym} ${s.name?'('+s.name+')':''}</option>`).join('');
 }
 
 function updateFundamentals() {
-  const sym = document.getElementById('fund-stock').value; if (!sym) return;
-  const idx = portfolio.findIndex(p=>p.sym===sym); if (idx<0) return;
-  ['pe','roe','roce','de'].forEach(k=>{ const v=parseFloat(document.getElementById('fund-'+k).value); if(!isNaN(v)&&v>0) portfolio[idx][k]=v; });
-  showMsg('fund-msg', sym+' updated!', true);
+  const sym=document.getElementById('fund-stock').value; if (!sym) return;
+  const idx=portfolio.findIndex(p=>p.sym===sym); if (idx<0) return;
+  ['pe','roe','roce','de'].forEach(k=>{const v=parseFloat(document.getElementById('fund-'+k).value);if(!isNaN(v)&&v>0)portfolio[idx][k]=v;});
+  showMsg('fund-msg',sym+' updated!',true);
   renderPortfolio(); savePortfolio();
 }
 
-function remove(i) { portfolio.splice(i,1); renderPortfolio(); renderAnalysis(); refreshSignals(); populateFundSelect(); savePortfolio(); }
+function remove(i){portfolio.splice(i,1);renderPortfolio();renderAnalysis();refreshSignals();populateFundSelect();savePortfolio();}
 
 function exportData() {
   if (!portfolio.length) return;
-  const rows = ['Symbol,Qty,AvgCost,CMP,PE,ROE,ROCE,DE,Source',
-    ...portfolio.map(s=>`${s.sym},${s.qty},${s.cost},${s.cmp},${s.pe||''},${s.roe||''},${s.roce||''},${s.de||''},${s.source}`)].join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(rows);
-  a.download = 'portfolio_' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
+  const rows=['Symbol,Company,Qty,AvgCost,CMP,PE,ROE,ROCE,DE',
+    ...portfolio.map(s=>`${s.sym},"${s.name||''}",${s.qty},${s.cost},${s.cmp},${s.pe||''},${s.roe||''},${s.roce||''},${s.de||''}`)].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows);
+  a.download='portfolio_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
 }
 
 function clearAll() {
@@ -562,41 +583,41 @@ function clearAll() {
 }
 
 async function callClaude(prompt, elId) {
-  const el = document.getElementById(elId);
+  const el=document.getElementById(elId);
   el.style.display='block'; el.textContent='Analysing with Claude...';
-  if (!apiKey) { el.textContent='Please enter your Anthropic API key in the green bar at the top.'; return; }
+  if (!apiKey){el.textContent='Please enter your Anthropic API key in the green bar at the top.';return;}
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
-    const d = await res.json();
-    el.textContent = d.content?.find(c=>c.type==='text')?.text || (d.error?.message || 'No response.');
-  } catch(e) { el.textContent='API call failed. Check your key and internet connection.'; }
+    const d=await res.json();
+    el.textContent=d.content?.find(c=>c.type==='text')?.text||(d.error?.message||'No response.');
+  } catch(e){el.textContent='API call failed. Check your key and internet connection.';}
 }
 
 async function askClaude(type) {
-  if (!portfolio.length) { document.getElementById('ai-response').textContent='Add stocks first.'; return; }
-  const sel = document.getElementById('analysis-stock').value;
-  const data = sel==='all' ? portfolio : portfolio.filter(s=>s.sym===sel);
-  const sum = data.map(s=>{ const sc=scoreStock(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
-    return `${s.sym}: Qty=${s.qty}, AvgCost=Rs${s.cost}, CMP=Rs${s.cmp}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%, ROCE=${s.roce||'N/A'}%, D/E=${s.de||'N/A'}, Score=${sc!==null?sc+'/100':'No fundamentals'}`;
+  if (!portfolio.length){document.getElementById('ai-response').textContent='Add stocks first.';return;}
+  const sel=document.getElementById('analysis-stock').value;
+  const data=sel==='all'?portfolio:portfolio.filter(s=>s.sym===sel);
+  const sum=data.map(s=>{const sc=scoreStock(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
+    return`${s.sym}${s.name?' ('+s.name+')':''}: Qty=${s.qty}, AvgCost=Rs${s.cost}, CMP=Rs${s.cmp}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%, ROCE=${s.roce||'N/A'}%, D/E=${s.de||'N/A'}, Score=${sc!==null?sc+'/100':'No fundamentals'}`;
   }).join('\n');
-  const prompts = {
-    review:`You are a seasoned Indian equity analyst. Review this NSE/BSE portfolio: (1) Overall health, (2) Top 2 strong holdings, (3) Top 2 concerns, (4) One actionable recommendation.\n\n${sum}`,
-    risks:`You are a risk analyst for Indian equity markets. Identify top 3 risks: what it is, which stocks, how to mitigate.\n\n${sum}`,
+  const prompts={
+    review:`You are a seasoned Indian equity analyst. Review this NSE/BSE portfolio: (1) Overall health, (2) Top 2 strong holdings, (3) Top 2 concerns, (4) One actionable recommendation. Be concise.\n\n${sum}`,
+    risks:`You are a risk analyst for Indian equity markets. Top 3 risks: what it is, which stocks, how to mitigate.\n\n${sum}`,
     compare:`Compare these Indian stocks on fundamentals. Rank strongest to weakest with key differences.\n\n${sum}`
   };
-  await callClaude(prompts[type], 'ai-response');
+  await callClaude(prompts[type],'ai-response');
 }
 
 async function askClaudeSignals() {
   if (!portfolio.length) return;
-  const sum = portfolio.map(s=>{ const sc=scoreStock(s),[sig]=signal(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
-    return `${s.sym}: Signal=${sig}, Score=${sc!==null?sc+'/100':'No fundamentals'}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%`;
+  const sum=portfolio.map(s=>{const sc=scoreStock(s),[sig]=signal(s),pct=s.cost>0?((s.cmp-s.cost)/s.cost)*100:0;
+    return`${s.sym}: Signal=${sig}, Score=${sc!==null?sc+'/100':'No fundamentals'}, P&L=${pct.toFixed(1)}%, P/E=${s.pe||'N/A'}, ROE=${s.roe||'N/A'}%`;
   }).join('\n');
-  await callClaude(`You are an Indian equity strategist. Provide specific buy/hold/sell guidance for these NSE/BSE stocks. For BUY: entry strategy. For SELL: exit rationale. For HOLD: what to watch.\n\n${sum}`, 'signals-ai');
+  await callClaude(`You are an Indian equity strategist. Provide specific buy/hold/sell guidance for these NSE/BSE stocks. For BUY: entry strategy. For SELL: exit rationale. For HOLD: what to watch.\n\n${sum}`,'signals-ai');
 }
 
 init();
